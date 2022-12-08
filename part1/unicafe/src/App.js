@@ -18,6 +18,12 @@ const Positive = ({ good, neutral, bad }) => {
   )
 }
 
+const StatisticLine = ({ text, value }) => {
+  return (
+    <p>{text} {value}</p>
+  )
+}
+
 const Statistics = ({ good, neutral, bad }) => {
   if (!good && !neutral && !bad) {
     return (
@@ -26,9 +32,9 @@ const Statistics = ({ good, neutral, bad }) => {
   }
   return (
     <div>
-      <p>good {good}</p>
-      <p>neutral {neutral}</p>
-      <p>bad {bad}</p>
+      <StatisticLine text="good" value={good} />
+      <StatisticLine text="neutral" value={neutral} />
+      <StatisticLine text="bad" value={bad} />
       <Total good={good} neutral={neutral} bad={bad} />
       <Average good={good} neutral={neutral} bad={bad} />
       <Positive good={good} neutral={neutral} bad={bad} />
