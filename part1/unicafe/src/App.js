@@ -2,25 +2,38 @@ import { useState } from 'react'
 
 const Total = ({ good, neutral, bad }) => {
   return (
-    <p>all {good + neutral + bad}</p>
+    <tr>
+      <td>all</td>
+      <td>{good + neutral + bad}</td>
+    </tr>
   )
 }
 
 const Average = ({ good, neutral, bad }) => {
   return (
-    <p>average {(good * 1 + neutral * 0 + bad * (-1) ) / (good + neutral + bad)}</p>
+    <tr>
+      <td>average</td>
+      <td>{(good * 1 + neutral * 0 + bad * (-1) ) / (good + neutral + bad)}</td>
+    </tr>
   )
 }
 
 const Positive = ({ good, neutral, bad }) => {
   return (
-    <p>positive {good * 100 / (good + neutral + bad)} %</p>
+    <tr>
+      <td>positive</td>
+      <td>{good * 100 / (good + neutral + bad)} %</td>
+    </tr>
   )
 }
 
 const StatisticLine = ({ text, value }) => {
   return (
-    <p>{text} {value}</p>
+    <tr>
+      <td>{text}</td> 
+      <td>{value}</td>
+    </tr>
+    
   )
 }
 
@@ -31,14 +44,14 @@ const Statistics = ({ good, neutral, bad }) => {
     )
   }
   return (
-    <div>
+    <table>
       <StatisticLine text="good" value={good} />
       <StatisticLine text="neutral" value={neutral} />
       <StatisticLine text="bad" value={bad} />
       <Total good={good} neutral={neutral} bad={bad} />
       <Average good={good} neutral={neutral} bad={bad} />
       <Positive good={good} neutral={neutral} bad={bad} />
-    </div>
+    </table>
   )
 }
 
