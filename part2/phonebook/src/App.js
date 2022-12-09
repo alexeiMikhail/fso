@@ -13,6 +13,10 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    if (persons.map((p) => p.name).includes(newName)) {
+      alert(`${newName} is already added to phonebook`)
+      return
+    }   
     const newGuy = {name: newName}
     console.log(newGuy)
     setPersons(persons.concat(newGuy))
@@ -29,7 +33,6 @@ const App = () => {
         <div>
           <button type="submit">add</button>
         </div>
-        <div>debug: {newName}</div>
       </form>
       <h2>Numbers</h2>
       <div>
