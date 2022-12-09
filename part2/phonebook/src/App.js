@@ -1,5 +1,39 @@
 import { useState, useRef } from 'react'
 
+const Filter = ({ handler, value }) => {
+  return (
+    <div>filter shown with <input type="text" onChange={handler} value={value}/></div>
+  )
+}
+
+const Form = ({ handleSubmit, handleNumInput, handleNameInput, newName, newNum, inputRef }) => {
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        name: <input autoFocus onChange={handleNameInput} ref={inputRef} value={newName}/>
+      </div>
+      <div>number: <input onChange={handleNumInput} value={newNum} /></div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  )
+}
+
+const Person = ({ p }) => {
+  return (
+    <p key={p.name}>{p.name} {p.number}</p>
+  )
+}
+
+const Persons = ({ persons, newFilter }) => {
+  return (
+    <div>
+      {persons.filter(p => p.name.toLowerCase().includes(newFilter.toLowerCase())).map(p => <Person key={p.name} p={p}/>)}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456' },
@@ -45,21 +79,16 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>filter shown with <input type="text" onChange={handleFilter} value={newFilter}/></div>
+      <Filter handler={handleFilter} value={newFilter}/>
       <h2>add a new</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          name: <input autoFocus onChange={handleNameInput} ref={inputRef} value={newName}/>
-        </div>
-        <div>number: <input onChange={handleNumInput} value={newNum} /></div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <Form handleSubmit={handleSubmit} 
+        handleNumInput={handleNumInput} 
+        handleNameInput={handleNameInput} 
+        inputRef={inputRef}
+        newName={newName}
+        newNum={newNum} />
       <h2>Numbers</h2>
-      <div>
-        {persons.filter(p => p.name.toLowerCase().includes(newFilter.toLowerCase())).map(p => <p key={p.name}>{p.name} {p.number}</p>)}
-      </div>
+      <Persons persons={persons} newFilter={newFilter} />
     </div>
   )
 }
