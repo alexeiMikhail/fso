@@ -27,10 +27,19 @@ const Country = ({ countries, filter }) => {
   )
 }
 
-const List = ({ countries, filter }) => {
+const ListItem = ({ c, setFilter }) => {
+  return (
+    <li key={c.name.official}>
+      {c.name.common}
+      <button onClick={() => setFilter(c.name.common)}>show</button>
+    </li>
+  )
+}
+
+const List = ({ countries, filter, setFilter }) => {
   const filtered = countries
     .filter(c => c.name.common.toLowerCase().includes(filter.toLowerCase()))
-    .map(c => <li key={c.name.official}>{c.name.common}</li>)
+    .map(c => <ListItem c={c} setFilter={setFilter} />)
   return (filtered.length === 1 ? 
     <Country countries={countries} filter={filter} /> :
     filtered.length <= 10 ?  
@@ -67,7 +76,7 @@ const App = () => {
   return (
     <div>
       find countries <input type="text" onChange={handleFilter} value={filter}/>
-      <List countries={countries} filter={filter} />
+      <List countries={countries} filter={filter} setFilter={setFilter} />
     </div>
   )
 }
