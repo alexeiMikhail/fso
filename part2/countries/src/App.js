@@ -3,9 +3,39 @@ import axios from 'axios'
 
 const Languages = ({ country }) => {
   return (
-    <ul>
-      {Object.values(country.languages).map(l => <li key={l}>{l}</li>)}
-    </ul>
+    <div>
+      <h3>languages:</h3>
+      <ul>
+        {Object.values(country.languages).map(l => <li key={l}>{l}</li>)}
+      </ul>
+    </div>
+  )
+}
+
+const Weather = ({ country }) => {
+  const [weather, setWeather] = useState({})
+
+  const API_key = process.env.REACT_APP_API_KEY
+
+  useEffect(() => {
+    console.log('effect: fetch weather api')
+    axios
+      .get(`https://api.openweathermap.org/data/2.5/weather?lat=${country.capitalInfo.latlng[0]}&lon=${country.capitalInfo.latlng[1]}&appid=${API_key}`)
+      .then(response => {
+        console.log("we got a response from the weather api", response.data);
+        setWeather(response.data)
+        console.log("and here's what was stored in weather", weather);
+      })
+  }, [])
+  
+  console.log('whats up with the weather', weather);
+  return (
+    <div>
+      <h3>weather in {country.capital[0]}</h3>
+      <p>temperature {Math.round((weather.main?.temp - 273.15) * 9 / 5 + 32)} F</p>
+      {weather.weather && <img src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt="" />}
+      <p>wind {weather.wind?.speed}</p>
+    </div>
   )
 }
 
@@ -13,16 +43,14 @@ const Country = ({ countries, filter }) => {
   const country = countries
     .filter(c => c.name.common.toLowerCase().includes(filter.toLowerCase()))[0]
   
-  console.log(country)
-  console.log(country.name.common);
   return (
     <div>
       <h2>{country.name.common}</h2>
-      <p>capital: {country.capital[0]}</p>
+      {country.capital && <p>capital: {country.capital[0]}</p>}
       <p>area: {country.area}</p>
-      <h3>languages:</h3>
       <Languages country={country} />
       <img src={country.flags.png} width="200" alt={`flag of ${country.name.common}`}/>
+      {country.capital && <Weather country={country} />}
     </div>
   )
 }
@@ -39,7 +67,7 @@ const ListItem = ({ c, setFilter }) => {
 const List = ({ countries, filter, setFilter }) => {
   const filtered = countries
     .filter(c => c.name.common.toLowerCase().includes(filter.toLowerCase()))
-    .map(c => <ListItem c={c} setFilter={setFilter} />)
+    .map(c => <ListItem key={c.name.official} c={c} setFilter={setFilter} />)
   return (filtered.length === 1 ? 
     <Country countries={countries} filter={filter} /> :
     filtered.length <= 10 ?  
@@ -48,16 +76,18 @@ const List = ({ countries, filter, setFilter }) => {
   )
 }
 
+
+
 const App = () => {
   const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    console.log('effect')
+    console.log('effect: fetch restcountries api')
     axios
       .get('https://restcountries.com/v3.1/all/')
       .then(response => {
-        console.log('promise fulfilled')
+        console.log('promise fulfilled: got restcountries api')
         let sorted = response.data.slice().sort((a, b) => {
           if (a.name.common < b.name.common) return -1;
           if (a.name.common > b.name.common) return 1;
@@ -66,8 +96,6 @@ const App = () => {
         setCountries(sorted)
       })
   }, [])
-
-  console.log(countries.map(c => c))
 
   const handleFilter = (event) => {
     setFilter(event.target.value)
