@@ -53,6 +53,16 @@ const App = () => {
     setNewFilter(event.target.value)
   }
 
+  const deletePerson = (person) => {
+    window.confirm(`Delete ${person.name}?`) &&
+    personsService.deleteItem(person.id)
+      .then(() => {
+        personsService
+        .getAll()
+        .then(response => setPersons(response))
+      })
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -65,7 +75,7 @@ const App = () => {
         newName={newName}
         newNum={newNum} />
       <h2>Numbers</h2>
-      <Persons persons={persons} newFilter={newFilter} />
+      <Persons persons={persons} newFilter={newFilter} del={deletePerson} />
     </div>
   )
 }
