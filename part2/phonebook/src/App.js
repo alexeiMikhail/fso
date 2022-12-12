@@ -3,7 +3,7 @@ import Filter from './components/Filter'
 import Form from './components/Form'
 import Persons from './components/Persons'
 import personsService from './services/persons'
-
+import Notification from './components/Notification'
 
 
 const App = () => {
@@ -11,6 +11,7 @@ const App = () => {
   const [newNum, setNewNum] = useState('')
   const [newFilter, setNewFilter] = useState('')
   const [persons, setPersons] = useState([])
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     personsService
@@ -21,7 +22,7 @@ const App = () => {
   const handleNameInput = (event) => {
     setNewName(event.target.value)
   }
-  
+
   const inputRef = useRef()
 
   const handleNumInput = (event) => {
@@ -32,18 +33,22 @@ const App = () => {
   const handleSubmit = (event) => {
     event.preventDefault()
     inputRef.current.select()
-    const newGuy = {name: newName, number: newNum}
+    const newGuy = { name: newName, number: newNum }
     if (persons.map((p) => p.name).includes(newName)) {
       window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`) &&
-      personsService
-        .update(persons.filter(p => p.name === newName)[0].id, newGuy)
-        .then(response => {
-          personsService.getAll()
-            .then(response => {
-              setPersons(response)
-              setNewNum('')
-              setNewName('')
-            })
+        personsService
+          .update(persons.filter(p => p.name === newName)[0].id, newGuy)
+          .then(response => {
+            personsService.getAll()
+              .then(response => {
+                setPersons(response)
+                setNewNum('')
+                setNewName('')
+                setNotification(`Changed ${newGuy.name}'s number`)
+                setTimeout(() => {
+                  setNotification(null)
+                }, 5000)
+              })
           })
       return
     }
@@ -55,32 +60,40 @@ const App = () => {
         setPersons(persons.concat(response))
         setNewName('')
         setNewNum('')
-      })    
+        setNotification(`Added ${response.name}`)
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
+      })
   }
 
-  const handleFilter = (event) => {
-    console.log(event.target.value)
-    setNewFilter(event.target.value)
-  }
+  const handleFilter = (event) => setNewFilter(event.target.value)
 
   const deletePerson = (person) => {
     window.confirm(`Delete ${person.name}?`) &&
-    personsService.deleteItem(person.id)
-      .then(() => {
-        personsService
-        .getAll()
-        .then(response => setPersons(response))
-      })
+      personsService.deleteItem(person.id)
+        .then(() => {
+          personsService
+            .getAll()
+            .then((response) => {
+              setNotification(`Deleted ${person.name}`)
+              setTimeout(() => {
+                setNotification(null)
+              }, 5000)
+             setPersons(response)
+            })
+        })
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter handler={handleFilter} value={newFilter}/>
+      <Notification message={notification} />
+      <Filter handler={handleFilter} value={newFilter} />
       <h2>add a new</h2>
-      <Form handleSubmit={handleSubmit} 
-        handleNumInput={handleNumInput} 
-        handleNameInput={handleNameInput} 
+      <Form handleSubmit={handleSubmit}
+        handleNumInput={handleNumInput}
+        handleNameInput={handleNameInput}
         inputRef={inputRef}
         newName={newName}
         newNum={newNum} />
