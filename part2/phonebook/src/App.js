@@ -43,10 +43,17 @@ const App = () => {
       return
     }  
     const newGuy = {name: newName, number: newNum}
-    console.log(newGuy)
-    setPersons(persons.concat(newGuy))
-    setNewName('')
-    setNewNum('')
+
+    axios
+    .post('http://localhost:3001/persons', newGuy)
+    .then(response => {
+      console.log(response)
+      setPersons(persons.concat(response.data))
+      setNewName('')
+      setNewNum('')
+    })
+
+    
   }
 
   const handleFilter = (event) => {
