@@ -32,11 +32,21 @@ const App = () => {
   const handleSubmit = (event) => {
     event.preventDefault()
     inputRef.current.select()
-    if (persons.map((p) => p.name).includes(newName)) {
-      alert(`${newName} is already added to phonebook`)
-      return
-    }  
     const newGuy = {name: newName, number: newNum}
+    if (persons.map((p) => p.name).includes(newName)) {
+      window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`) &&
+      personsService
+        .update(persons.filter(p => p.name === newName)[0].id, newGuy)
+        .then(response => {
+          personsService.getAll()
+            .then(response => {
+              setPersons(response)
+              setNewNum('')
+              setNewName('')
+            })
+          })
+      return
+    }
 
     personsService
       .create(newGuy)
