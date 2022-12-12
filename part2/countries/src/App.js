@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
+// TODO: figure out a way to handle cases where country is a substring of another country
+
 const Languages = ({ country }) => {
   return (
     <div>
@@ -26,8 +28,8 @@ const Weather = ({ country }) => {
         setWeather(response.data)
         console.log("and here's what was stored in weather", weather);
       })
-  }, [])
-  
+  }, [API_key, country.capitalInfo.latlng, weather])
+
   console.log('whats up with the weather', weather);
   return (
     <div>
