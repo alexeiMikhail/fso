@@ -12,6 +12,7 @@ const App = () => {
   const [newFilter, setNewFilter] = useState('')
   const [persons, setPersons] = useState([])
   const [notification, setNotification] = useState(null)
+  const [notifType, setNotifType] = useState(null)
 
   useEffect(() => {
     personsService
@@ -44,11 +45,23 @@ const App = () => {
                 setPersons(response)
                 setNewNum('')
                 setNewName('')
+                setNotifType(null)
                 setNotification(`Changed ${newGuy.name}'s number`)
                 setTimeout(() => {
                   setNotification(null)
                 }, 5000)
               })
+          })
+          .catch(error => {
+            setNotifType('error')
+            setNotification(
+              `'${newName}' was already removed from server`
+            )
+            setTimeout(() => {
+              setNotification(null)
+              setNotifType(null)
+            }, 5000)
+            setPersons(persons.filter(n => n.name !== newName))
           })
       return
     }
@@ -60,6 +73,7 @@ const App = () => {
         setPersons(persons.concat(response))
         setNewName('')
         setNewNum('')
+        setNotifType(null)
         setNotification(`Added ${response.name}`)
         setTimeout(() => {
           setNotification(null)
@@ -88,7 +102,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notification} />
+      <Notification message={notification} type={notifType} />
       <Filter handler={handleFilter} value={newFilter} />
       <h2>add a new</h2>
       <Form handleSubmit={handleSubmit}
